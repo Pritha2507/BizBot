@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Chatbot with Groq</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f7fc;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+        h1, h2 {
+            text-align: center;
+            color: #192440;
+        }
+        form {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            background: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #333;
+        }
+        input[type="text"], input[type="number"], input[type="file"], select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .input-box {
+            width: calc(100% - 22px); /* to account for padding and border */
+        }
+        button {
+            display: inline-block;
+            padding: 10px 20px;
+            margin-right: 10px;
+            font-size: 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .cta-green {
+            background: #00FFAD;
+            color: #192440;
+        }
+        .cta-green:hover {
+            color: #ffffff;
+            background: #00e69c;
+        }
+        .cta-blue {
+            background: #192440;
+            color: #ffffff;
+        }
+        .cta-blue:hover {
+            background: #121a2e;
+        }
+        .chat-box {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            background: #fff;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            max-height: 400px;
+            overflow-y: scroll;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .chat-box p {
+            margin: 5px 0;
+            color: #333;
+        }
+        .chat-box hr {
+            border: none;
+            border-top: 1px solid #eee;
+        }
+        a {
+            display: inline-block;
+            text-align: center;
+            width: 100%;
+            text-decoration: none;
+            padding: 10px;
+            margin-top: 20px;
+            background-color: #192440;
+            color: white;
+            border-radius: 4px;
+        }
+        a:hover {
+            background-color: #121a2e;
+        }
+        .full-width-iframe {
+        width: 100%; /* Sets the width of the iframe to 100% of its container */
+        height: 100vh; /* Sets the height of the iframe to the full viewport height */
+        border: none; /* Removes any border around the iframe */
+        display: block; /* Ensures the iframe is a block-level element */
+        margin: 0; /* Removes any margin around the iframe */
+        padding: 0; /* Removes padding */
+    }
+
+
+    </style>
+</head>
+<body>
+
+    <h1>Chat with ME!</h1>
+
+    <form action="/" method="POST" enctype="multipart/form-data">
+        <label for="system_prompt">System Prompt:</label>
+        <input type="text" name="system_prompt" placeholder="Enter a system prompt">
+
+        <label for="model">Choose a model:</label>
+        <select name="model">
+            <option value="llama3-8b-8192">llama3-8b-8192</option>
+            <option value="mixtral-8x7b-32768">mixtral-8x7b-32768</option>
+            <option value="gemma-7b-it">gemma-7b-it</option>
+        </select>
+
+        <label for="memory_length">Conversational Memory Length:</label>
+        <input type="number" name="memory_length" value="5" min="1" max="10">
+
+        <label for="dataset">Upload Dataset (CSV):</label>
+        <input type="file" name="dataset">
+
+        <input type="text" name="user_input" placeholder="Ask a question..." class="input-box">
+
+        <button type="submit" class="cta-green">Send</button>
+    </form>
+
+    <h2>Chat History</h2>
+    <div class="chat-box">
+        {% for chat in chat_history %}
+            <p><strong>You:</strong> {{ chat.human }}</p>
+            <pre>{{ chat.AI | safe }}</pre> 
+            <hr>
+        {% endfor %}
+    </div>
+    <a href="https://ayubdnjbnw33w5i67glw9z.streamlit.app/?embed_options=light_theme">Go to Model Predictions</a>
+
+    <div class="sweetviz-container"></div>
+<h2>Sweetviz Dashboard</h2>
+{% if session['dataset_path'] %}
+<iframe src="/static/sweetviz_report.html" title="Sweetviz Report" class="full-width-iframe"></iframe>
+
+{% else %}
+    <p>No dataset uploaded for dashboard.</p>
+{% endif %}
+</div>
+
+    <a href="/export_pdf" class="cta-blue">Export Chat to PDF</a>
+
+</body>
+</html>
